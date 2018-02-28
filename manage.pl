@@ -49,9 +49,9 @@ elsif ($opt eq '-f') {
     my $interval = $ENV{'ENR_INTERVAL'} || 60;
     my $time_watcher = AnyEvent->timer ( interval => $interval, cb => sub { sync_cycle() } );
 
-    if ($ENV{'ENR_DISABLE_INOTIFY'}  == 1) {
+    if ($ENV{'ENR_DISABLE_INOTIFY'}  != 1) {
         my $inotify = new Linux::Inotify2 or die "Unable to create new inotify object: $!" ;
-        monitor($inotify);
+        monitor($inotify); # setup file watcher and inotify actions
         my $inotify_watcher = AnyEvent->io (
            fh => $inotify->fileno, poll => 'r', cb => sub {
                $log->info("Inotify event was received");
@@ -95,6 +95,7 @@ sub sync_cycle {
             $ncfg->sync;
         }
     }
+    reload_nginx();
     $log->info("Sync finished");
 }
 
@@ -133,18 +134,28 @@ sub monitor {
                $log->info("Some unknown change");
            }
        };
-       my $cmd = $ENV{'ENR_NGINX_RELOAD_CMD'} || 'docker kill -s HUP nginx';
-       my $res = `$cmd`;
-       $log->info($cmd);
-       if ($res =~ qr/nginx/) {
-           $log->info("nginx was successfully reloaded");
-       } else {
-           $log->info("Some problem occured when reloading nginx: ".$res);
-       }
+       reload_nginx();
        $ncfg->sync;
        $main_cnf_1 = load_yaml($yaml_cnf_filename);
     });
 
+}
+
+=head2 reload_nginx()
+
+Reload nginx config
+
+=cut
+
+sub reload_nginx {
+    my $cmd = $ENV{'ENR_NGINX_RELOAD_CMD'} || 'docker kill -s HUP nginx';
+    my $res = `$cmd`;
+    $log->info($cmd);
+    if ($res =~ qr/nginx/) {
+        $log->info("nginx was successfully reloaded");
+    } else {
+        $log->info("Some problem occured when reloading nginx: ".$res);
+    }
 }
 
 
