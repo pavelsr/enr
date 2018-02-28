@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+
+    easy-nginx-redirects:
+        restart: always
+        privileged: true
+        container_name: enr
+        image: pavelsr/enr
+        volumes:
+            - ./config.yaml:/app/config.yaml
+            - /var/lib/docker/volumes/839fde5b09a48a2385ef388d35b4c00293702e3d1e9b52057915b4414d84ee17/_data/default.conf:/app/nginx.conf
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            - ENR_DISABLE_INOTIFY     # to disable inotify feature and use only AnyEvent timer
+            - ENR_INTERVAL            # interval for AnyEvent timer, in seconds, by default 60
+            - ENR_NGINX_CFG_PATH      # path to config.yaml relative to WORKDIR
+            - ENR_NGINX_RELOAD_CMD    # nginx reload cmd, by default  docker kill -s HUP nginx
+            - ENR_YAML_CFG_PATH       # path to nginx.conf relative to WORKDIR
