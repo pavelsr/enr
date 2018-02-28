@@ -1,9 +1,9 @@
 # enr - Easy nginx redirects
 
-[![Docker Stars](https://img.shields.io/docker/stars/_/ubuntu.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mashape/kong.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
-[![ImageLayers Size](https://img.shields.io/imagelayers/image-size/_/ubuntu/latest.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
-[![ImageLayers Layers](https://img.shields.io/imagelayers/layers/_/ubuntu/latest.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+[![Docker Stars](https://img.shields.io/docker/stars/pavelsr/enr.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/pavelsr/enr?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+[![ImageLayers Size](https://img.shields.io/imagelayers/image-size/pavelsr/enr/latest.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+[![ImageLayers Layers](https://img.shields.io/imagelayers/layers/pavelsr/enr/latest.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
 
 Docker container that automatically creates nginx redirects from yaml config file and sync changes
 
