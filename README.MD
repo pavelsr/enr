@@ -1,10 +1,15 @@
 # enr - Easy nginx redirects
 
-Docker container that automatically creates nginx redirects from config file (could be json or yaml) and sync changes
+[![Docker Stars](https://img.shields.io/docker/stars/_/ubuntu.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mashape/kong.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+[![ImageLayers Size](https://img.shields.io/imagelayers/image-size/_/ubuntu/latest.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+[![ImageLayers Layers](https://img.shields.io/imagelayers/layers/_/ubuntu/latest.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
+
+Docker container that automatically creates nginx redirects from yaml config file and sync changes
 
 Build your own nameserver for redirects and manage configuration at one place!
 
-Using this service you can create free tilda landings on your own domain ;)
+E.g. using this service you can create free tilda landings on your own domain ;)
 
 # Problem
 
@@ -16,11 +21,11 @@ But!
 
 1) CNAME record can't handle urls. So you can't create subdomain bitlinks like `q.example.com -> https://docs.google.com/forms/*`
 
-2) In case of such services like Tilda CNAME DNS records wouldn't work without payment
+2) In case of such services like Tilda CNAME DNS records wouldn't work without payment `¯\_(ツ)_/¯`
 
 # Solution
 
-You can use this service
+You can use this service :wink:
 
 # Running (5 easy steps)
 
@@ -30,7 +35,7 @@ For easy nginx setup personally I'm using [nginx-proxy](https://github.com/jwild
 
 2) Place all required redirects in yaml file, e.g. :
 
-```
+```yaml
 somedomain.ru: somedomain.tilda.ws
 ```
 
@@ -38,13 +43,13 @@ somedomain.ru: somedomain.tilda.ws
 
 If you are using [nginx-proxy](https://github.com/jwilder/nginx-proxy) you can define default.config path using `jq`:
 
-```
+```sh
 docker inspect nginx | jq '.[].Mounts[] | select(.Destination == "/etc/nginx/conf.d") .Source' | tr -d '"'
 ```
 
 4) Start docker container (do it at same folder where `config.yaml` placeddocker):
 
-```
+```sh
 docker run -d --name enr --privileged --restart=always \
 -v $(pwd)/config.yaml:/app/config.yaml \
 -v /var/lib/docker/volumes/839fde5b09a48a2385ef388d35b4c00293702e3d1e9b52057915b4414d84ee17/_data/default.conf:/app/nginx.conf \
@@ -71,15 +76,17 @@ App is written in Perl, for managing watchers it uses [AnyEvent](https://metacpa
 
 For auto nginx reloading it uses `docker kill -s HUP nginx` command, for that docker `--privileged` mode and `/var/run/docker.sock` volume are required
 
+Badges in this readme brought by [shields.io](http://shields.io/)
+
 # docker run options
 
-As alternative you can use docker-compose
+As alternative you can use [docker-compose file](https://github.com/pavelsr/enr/blob/master/docker-compose.yml)
 
 If you just want to minimize resources usage and monitor config file only each minute please run as ` docker run ... pavelsr/enr /usr/sbin/crond -f`. Appropriate command is already addded to `/etc/crontabs/root`.
 
 Also you setup via `ENR_INTERVAL` env variable how often in seconds app will check nginx config (by default `60`):
 
-```
+```sh
 docker run -d --name enr --privileged --restart=always \
 -v $(pwd)/config.yaml:/app/config.yaml \
 -v /var/lib/docker/volumes/839fde5b09a48a2385ef388d35b4c00293702e3d1e9b52057915b4414d84ee17/_data/default.conf:/app/nginx.conf \
@@ -91,7 +98,7 @@ pavelsr/enr
 
 # ENV variables
 
-```
+```sh
 $ grep -o -P "ENR_\w+" manage.pl | sort -u
 ENR_DISABLE_INOTIFY     # to disable inotify feature and use only AnyEvent timer
 ENR_INTERVAL            # interval for AnyEvent timer, in seconds, by default 60
@@ -116,14 +123,14 @@ Also if there are no inotify event after config file changed try to restart enr 
 
 App is working fine only if you are not modifying server redirect directives in nginx config using some other software or docker container
 
-Otherwise correctness is not guaranteed (since )
+Otherwise correctness is not guaranteed (since I haven't tested app in interaction with other app despite nginx-proxy)
 
 
 # Donations
 
 If you like my work please consider to make a donation
 
-Paypal: pavel.p.serikov@gmail.com
+Paypal: `pavel.p.serikov@gmail.com`
 
 Bitcoin: 19vCkPyQvjYZ6gkYaNfE51gzHzpAPZ6STj
 
