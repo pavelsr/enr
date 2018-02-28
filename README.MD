@@ -1,7 +1,7 @@
 # enr - Easy nginx redirects
 
 [![Docker Stars](https://img.shields.io/docker/stars/pavelsr/enr.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/pavelsr/enr.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/) [![MicroBadger Layers](https://img.shields.io/microbadger/layers/pavelsr/enr.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/) ![MicroBadger Size](https://img.shields.io/microbadger/image-size/pavelsr/enr.svg?style=flat-square)(https://hub.docker.com/r/pavelsr/enr/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/pavelsr/enr.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/) [![MicroBadger Layers](https://img.shields.io/microbadger/layers/pavelsr/enr.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/) ![MicroBadger Size](https://img.shields.io/microbadger/image-size/pavelsr/enr.svg?style=flat-square)](https://hub.docker.com/r/pavelsr/enr/)
 
 Docker container that automatically creates nginx redirects from yaml config file and sync changes
 
