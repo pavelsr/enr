@@ -55,8 +55,9 @@ sub _parse_nginx_cnf {
 
     # Bit of validation
     my @result;
+    my $ne_pattern = '^(http|https):\/\/\$host\$request_uri';
     for my $hash (@parsed_config) {
-        push @result, $hash if (  exists $hash->{server_name} && exists $hash->{return} && $hash->{return}[0] == '301' );
+        push @result, $hash if (  exists $hash->{server_name} && exists $hash->{return} && ( $hash->{return}[0] == '301' ) && ( $hash->{return}[1] !~ qr/$ne_pattern/ ) );
     }
     return \@result;
 }
