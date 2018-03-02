@@ -113,9 +113,13 @@ Move Redirects::Nginx at separate repository and publish it on cpan
 
 Before create github issue please check is your redirects successfully recognized: `docker exec -it enr perl manage.pl -n`
 
-Also you can check nginx.conf directly: `docker exec -it enr tail -n 10 nginx.conf`
+Also you can check nginx.conf directly: `docker exec -it enr tail -n 10 nginx.conf` and `tail -n 10 $(docker inspect enr | jq '.[].Mounts[] | select(.Destination == "/app/nginx.conf") .Source' | tr -d '"')`
 
 If no please double check docker volume paths
+
+```
+docker inspect enr | jq '.[].Mounts[] | select(.Destination == "/app/nginx.conf") .Source' | tr -d '"'
+```
 
 Also if there are no inotify event after config file changed try to restart enr container
 

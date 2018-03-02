@@ -189,6 +189,17 @@ sub sync {
     delete $self->{diff};
 }
 
+=head2 has_diff
+
+Check is there any updates in diff (useful for optimization)
+
+=cut
+
+sub has_diff {
+    my $self = shift;
+    return ( scalar @{$self->{diff}} > 0) ? 1 : 0;
+}
+
 =head2 print
 
 Print all nginx redirects in a human readible way (useful for debug)

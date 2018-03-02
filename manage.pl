@@ -84,19 +84,25 @@ It doesn't delete nginx redirects that are not in config.yaml
 
 
 sub sync_cycle {
-    $log->info("Syncing....");
+    $log->info("Start syncing....");
     my $ncfg = Redirects::Nginx->new($nginx_cnf_filename);
     my $redirects_from_nginx = $ncfg->as_hash;
     my $redirects_from_cnf = load_yaml($yaml_cnf_filename);
     foreach my $key (keys %$redirects_from_cnf) {
         if (!defined $redirects_from_nginx->{$key}) {
-            $log->info("Server ".$key." was added");
             $ncfg->add({ $key => $redirects_from_cnf->{$key} });
-            $ncfg->sync;
+            $log->info("Server ".$key." was added");
         }
     }
-    reload_nginx();
-    $log->info("Sync finished");
+    if ($ncfg->has_diff) {
+        $ncfg->sync;
+        reload_nginx();
+        $log->info("Sync finished");
+    }
+    else {
+        $log->info("Sync finished. No changes found");
+    }
+
 }
 
 

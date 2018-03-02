@@ -15,7 +15,7 @@ RUN apk update && \
 WORKDIR /app
 COPY lib ./lib
 COPY manage.pl .
-RUN touch config.yaml nginx.conf
+# RUN touch config.yaml nginx.conf
 
 RUN echo '* * * * * perl /app/manage.pl -s 2>&1' > /etc/crontabs/root
 
