@@ -41,13 +41,13 @@ somedomain.ru: somedomain.tilda.ws
 
 If you are using [nginx-proxy](https://github.com/jwilder/nginx-proxy) you can define default.config path using `jq`:
 
-```sh
+```bash
 docker inspect nginx | jq '.[].Mounts[] | select(.Destination == "/etc/nginx/conf.d") .Source' | tr -d '"'
 ```
 
 4) Start docker container (do it at same folder where `config.yaml` placeddocker):
 
-```sh
+```bash
 docker run -d --name enr --privileged --restart=always \
 -v $(pwd)/config.yaml:/app/config.yaml \
 -v /var/lib/docker/volumes/839fde5b09a48a2385ef388d35b4c00293702e3d1e9b52057915b4414d84ee17/_data/default.conf:/app/nginx.conf \
@@ -84,7 +84,7 @@ If you just want to minimize resources usage and monitor config file only each m
 
 Also you setup via `ENR_INTERVAL` env variable how often in seconds app will check nginx config (by default `60`):
 
-```sh
+```bash
 docker run -d --name enr --privileged --restart=always \
 -v $(pwd)/config.yaml:/app/config.yaml \
 -v /var/lib/docker/volumes/839fde5b09a48a2385ef388d35b4c00293702e3d1e9b52057915b4414d84ee17/_data/default.conf:/app/nginx.conf \
@@ -96,7 +96,7 @@ pavelsr/enr
 
 # ENV variables
 
-```sh
+```bash
 $ grep -o -P "ENR_\w+" manage.pl | sort -u
 ENR_DISABLE_INOTIFY     # to disable inotify feature and use only AnyEvent timer
 ENR_INTERVAL            # interval for AnyEvent timer, in seconds, by default 60
@@ -126,6 +126,17 @@ Also if there are no inotify event after config file changed try to restart enr 
 App is working fine only if you are not modifying server redirect directives in nginx config using some other software or docker container
 
 Otherwise correctness is not guaranteed (since I haven't tested app in interaction with other app despite nginx-proxy)
+
+If you see docker single file volume sync bug (like this), try to use folders:
+
+```
+docker run -d --name enr --privileged --restart=always \
+-v $(pwd)/config.yaml:/app/config.yaml \
+-v /var/lib/docker/volumes/839fde5b09a48a2385ef388d35b4c00293702e3d1e9b52057915b4414d84ee17/_data/:/app/nginx \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-e "ENR_NGINX_CFG_PATH=/app/nginx/default.conf" \
+pavelsr/enr
+```
 
 
 # Donations
