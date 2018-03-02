@@ -138,6 +138,7 @@ docker run -d --name enr --privileged --restart=always \
 pavelsr/enr
 ```
 
+Also make sure that you run container from folder where config.yml present
 
 # Donations
 
