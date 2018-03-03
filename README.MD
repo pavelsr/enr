@@ -117,7 +117,7 @@ Also you can check nginx.conf directly: `docker exec -it enr tail -n 10 nginx.co
 
 If no please double check docker volume paths
 
-```
+```bash
 docker inspect enr | jq '.[].Mounts[] | select(.Destination == "/app/nginx.conf") .Source' | tr -d '"'
 ```
 
@@ -127,9 +127,9 @@ App is working fine only if you are not modifying server redirect directives in 
 
 Otherwise correctness is not guaranteed (since I haven't tested app in interaction with other app despite nginx-proxy)
 
-If you see docker single file volume sync bug (like this), try to use folders:
+If you see docker single file volume sync bug (like [this](https://github.com/docker/for-win/issues/1392)), try to use folders:
 
-```
+```bash
 docker run -d --name enr --privileged --restart=always \
 -v $(pwd)/config.yaml:/app/config.yaml \
 -v /var/lib/docker/volumes/839fde5b09a48a2385ef388d35b4c00293702e3d1e9b52057915b4414d84ee17/_data/:/app/nginx \
