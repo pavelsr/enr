@@ -17,7 +17,7 @@ jobs:
         python-version: ["3.8"]  # Test with minimum supported Python version
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -47,7 +47,7 @@ jobs:
         python-version: ["3.12"]  # Test with latest Python version
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
