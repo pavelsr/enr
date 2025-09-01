@@ -1,0 +1,60 @@
+name: Cross-Platform Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run weekly on Sunday at 06:00 UTC
+    - cron: '0 6 * * 0'
+
+jobs:
+  test-cross-platform:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.8", "3.11", "3.12"]
+        exclude:
+          # Reduce matrix size by excluding some combinations
+          - os: windows-latest
+            python-version: "3.8"
+          - os: macos-latest
+            python-version: "3.8"
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+    
+    - name: Run tests
+      run: |
+        python -m pytest tests/ -v
+    
+    - name: Test CLI functionality (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        python build_single_script.py
+        chmod +x enr.sh
+        ./enr.sh example.com http://localhost:3000 --dry-run --force
+    
+    - name: Test CLI functionality (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        python build_single_script.py
+        python enr.py example.com http://localhost:3000 --dry-run --force
+    
+    - name: Test package installation
+      run: |
+        pip install -e .
+        enr example.com http://localhost:3000 --dry-run --force
