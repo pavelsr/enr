@@ -10,6 +10,10 @@ install: ## Install dependencies
 install-dev: ## Install development dependencies
 	pip install -r requirements-dev.txt
 
+sync-version: ## Sync version from version.py to pyproject.toml
+	@echo "🔄 Syncing version from version.py to pyproject.toml..."
+	python update_version.py
+
 test: ## Run tests
 	python -m pytest tests/ -v
 
@@ -37,14 +41,40 @@ lint-fix: ## Run ruff linting with auto-fix
 	ruff check --fix enr/ tests/
 
 run-example: ## Run example with dry-run
-	./enr.py example.com http://localhost:3000 --dry-run
+	./enr.pyz example.com http://localhost:3000 --dry-run --force
 
-build: ## Build single script from modules
-	python build_single_script.py
+build: ## Build single script from modules using zipapp
+	@echo "🔨 Building single script from modules using zipapp..."
+	@echo "📦 Creating temporary build directory..."
+	@rm -rf temp_enr_build
+	@mkdir -p temp_enr_build
+	@echo "📝 Creating __main__.py entry point..."
+	@python -c "import sys; sys.path.insert(0, '.'); from enr import __version__; print('''#!/usr/bin/env python3\n\"\"\"\nENR CLI utility for nginx config and Docker container management.\nVersion: ''' + __version__ + '''\n\"\"\"\n\nimport sys\nimport os\n\n# Add current directory to path for imports\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n\n# Set version for the package\nimport enr\nenr.__version__ = \"''' + __version__ + '''\"\n\n# Import and run the CLI\nfrom enr.cli import main\n\nif __name__ == \"__main__\":\n    main()\n''')" > temp_enr_build/__main__.py
+	@echo "📁 Copying enr package..."
+	@cp -r enr temp_enr_build/
+	@echo "🔧 Creating zipapp archive..."
+	@python -m zipapp temp_enr_build -o enr.pyz -p "/usr/bin/env python3"
+	@echo "🔒 Making executable..."
+	@chmod +x enr.pyz
+	@echo "🧹 Cleaning up..."
+	@rm -rf temp_enr_build
+	@echo ""
+	@echo "📊 Build Information:"
+	@echo "  📁 Output file: enr.pyz"
+	@echo "  📏 Size: $$(du -h enr.pyz | cut -f1)"
+	@echo "  📝 Lines: $$(wc -l < enr.pyz 2>/dev/null || echo 'N/A (binary)')"
+	@echo "  🔐 SHA256: $$(sha256sum enr.pyz | cut -d' ' -f1)"
+	@if [ -d .git ]; then \
+		echo "  🏷️  Version: $$(python -c 'from enr import __version__; print(__version__)' 2>/dev/null || echo 'unknown')"; \
+		echo "  🐙 Commit: $$(git rev-parse --short HEAD 2>/dev/null || echo 'not a git repo')"; \
+	else \
+		echo "  🏷️  Version: $$(python -c 'from enr import __version__; print(__version__)' 2>/dev/null || echo 'unknown')"; \
+		echo "  🐙 Commit: not a git repo"; \
+	fi
 
 build-dist: ## Build distribution packages
 	@echo "Building distribution packages..."
-	python -m build
+	flit build
 	@echo "✅ Distribution packages built successfully"
 	@echo "📦 Files created:"
 	@ls -la dist/

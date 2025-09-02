@@ -48,7 +48,7 @@ Table of Contents
 Since it uses only Python standard library without external dependencies you can install it via:
 
 ```bash
-curl -fsSL --compressed https://raw.githubusercontent.com/pavelsr/enr/main/enr.sh > /usr/local/bin/enr && \
+curl -fsSL --compressed https://raw.githubusercontent.com/pavelsr/enr/main/enr.pyz > /usr/local/bin/enr && \
     chmod +x /usr/local/bin/enr
 ```
 
@@ -80,8 +80,8 @@ cd enr
 pip install -e .
 # Install development dependencies
 pip install -e ".[dev]"
-# Creates enr.sh from modules:
-make build  # Creates enr.sh from modules
+# Creates enr.pyz from modules:
+make build  # Creates enr.pyz from modules
 ```
 
 ### Notes about pipx 
@@ -108,8 +108,8 @@ pipx install enr
 You can copy the project manually using scp or rsync from a machine where GitHub is NOT blocked:
 
 ```bash
-# Using scp, only enr.sh
-scp ./enr.sh user@host.example.com:/usr/local/bin/enr
+# Using scp, only enr.pyz
+scp ./enr.pyz user@host.example.com:/usr/local/bin/enr
 
 # Using scp, whole source code
 ssh user@host.example.com "mkdir -p ~/enr" && scp -r * user@host.example.com:~/enr/
@@ -126,7 +126,7 @@ rsync -avz . user@host.example.com:~/enr/
 # Usage
 
 ```
-usage: enr.sh [-h] [--port PORT] [--container-name CONTAINER_NAME] [--network NETWORK] [--config-dir CONFIG_DIR] [--dry-run] [--force] [--with-letsencrypt] [--version] server_name proxy_pass
+usage: enr [-h] [--port PORT] [--container-name CONTAINER_NAME] [--network NETWORK] [--config-dir CONFIG_DIR] [--dry-run] [--force] [--with-letsencrypt] [--version] server_name proxy_pass
 
 positional arguments:
   server_name           Domain name for the server
@@ -146,12 +146,12 @@ options:
   --version             Show version and exit
 
 Examples:
-  enr.sh example.com http://<container_name>:3000
-  enr.sh example.com http://host.docker.internal:8000 --port 3000
-  enr.sh example.com http://host.docker.internal:8000 --with-letsencrypt
-  enr.sh shop.example.com https://marketplace.example/seller/<seller_id>
-  enr.sh example.com https://example.tilda.ws --container-name my-tilda-proxy
-  enr.sh test.com http://localhost:5000 --dry-run --config-dir ./configs --force
+enr example.com http://<container_name>:3000
+enr example.com http://host.docker.internal:8000 --port 3000
+enr example.com http://host.docker.internal:8000 --with-letsencrypt
+enr shop.example.com https://marketplace.example/seller/<seller_id>
+enr example.com https://example.tilda.ws --container-name my-tilda-proxy
+enr test.com http://localhost:5000 --dry-run --config-dir ./configs --force
 ```
 
 ## nginx-proxy Compatibility
@@ -198,7 +198,7 @@ Some Technical Overview about Architecture and Implementation Details
 For full functionality, it is recommended to use:
 
 - **[nginx-proxy](https://github.com/nginx-proxy/nginx-proxy)** - automatic Docker container proxying
-- **[nginx-proxy-letsencrypt](https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion)** - automatic Let's Encrypt SSL certificates
+- **[nginx-proxy-letsencrypt](https://github.com/nginx-proxy/acme-companion)** - automatic Let's Encrypt SSL certificates
 
 ## Dependencies
 
@@ -261,13 +261,16 @@ Implemented Features:
 
 - [x] **Easy to use** - one command to set up reverse proxy
 - [x] **No external dependencies** - only Python needed (recommended version 3.11)
-- [x] **Single script** - can be installed with one curl command without git/pip/pipx
+- [x] **Single script** - can be installed with one curl command, without git/pip/pipx
 - [x] **Docker integration** - automatic container running
 - [x] **nginx-proxy integration** - nginx-proxy automatically discover containers by `VIRTUAL_HOST`
 - [x] **Automatic protocol addition** - automatically adds `http://` to domains without protocol
 - [x] **Automatic arguments addition** - automatically adds arguments for support `host.docker.internal`
 - [x] **Automatic Let's Encrypt SSL support** - automatically adds environment variables for HTTPS
 - [x] **Named configurations** - files are created as `{server_name}.proxy.conf` for better organization
+- [x] **Single-source versionin** - `__init__.py`
+- [x] **Flit-based build system**
+- [x] **Zipapp-based single-file build**
 
 TODO (Roadmap):
 
@@ -284,7 +287,7 @@ make help
 ```
 
 <details>
-<summary>Makefile commands and Pre-commit Hooks</summary>
+<summary>Common Makefile commands</summary>
 
 
 ```bash
@@ -309,8 +312,33 @@ make pre-commit-clean  # Clean pre-commit cache
 # Clean temporary files
 make clean
 ```
+</details>
 
-### Pre-commit Hooks
+
+## Version Management
+
+The project uses a centralized version management system with [flit](https://github.com/pypa/flit) for building. The version is stored in **ONE PLACE ONLY** and automatically propagated to all other files using flit's built-in dynamic version support:
+
+- **Single source of truth**: Version is stored **ONLY** in `version.py` in the project root
+- **Automatic propagation**: All other files automatically get the version from this file
+- **Flit dynamic versioning**: Uses flit's built-in `dynamic = ["version"]` feature
+- **No git dependency**: Version management works independently of git tags
+- **No manual sync needed**: Version is automatically read from module during build
+
+**To change version ONLY ONE STEP REQUIRED:** Update version in `__init__.py`: `__version__ = "x.y.z"`
+
+**That's it!** All other files automatically get the new version when you run:
+- `make build` - builds single script with current version
+- `make build-dist` - builds distribution packages with current version
+
+**Files that automatically get the version:**
+- `pyproject.toml` - gets version automatically via flit dynamic versioning
+- Distribution packages (wheel, tar.gz) - get the correct version in their names
+- Single script (`enr.pyz`) - gets version from `__init__.py`
+
+For detailed information, see [VERSIONING.md](VERSIONING.md).
+
+## Pre-commit Hooks
 
 The project uses pre-commit hooks for automatic code quality checking before each commit
 
@@ -319,6 +347,6 @@ The project uses pre-commit hooks for automatic code quality checking before eac
 - ✅ Code formatting (Black)
 - ✅ Style checking (ruff)
 - ✅ Test running
-- ✅ Automatic addition of changed `enr.sh` to commit
+- ✅ Automatic addition of changed `enr.pyz` to commit
 
-</details>
+

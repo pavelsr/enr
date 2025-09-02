@@ -8,7 +8,7 @@ from pathlib import Path
 def test_single_script_help():
     """Test that single script shows help."""
     result = subprocess.run(
-        ["./enr.sh", "--help"],
+        ["./enr.pyz", "--help"],
         capture_output=True,
         text=True,
         cwd=Path(__file__).parent.parent,
@@ -25,7 +25,7 @@ def test_single_script_dry_run():
     with tempfile.TemporaryDirectory() as temp_dir:
         result = subprocess.run(
             [
-                "./enr.sh",
+                "./enr.pyz",
                 "test.com",
                 "http://localhost:3000",
                 "--dry-run",
@@ -60,7 +60,7 @@ def test_single_script_dry_run_with_https():
     with tempfile.TemporaryDirectory() as temp_dir:
         result = subprocess.run(
             [
-                "./enr.sh",
+                "./enr.pyz",
                 "api.test.com",
                 "https://api.example.com",
                 "--dry-run",
@@ -98,7 +98,7 @@ def test_single_script_auto_add_protocol():
     with tempfile.TemporaryDirectory() as temp_dir:
         result = subprocess.run(
             [
-                "./enr.sh",
+                "./enr.pyz",
                 "test.com",
                 "localhost:3000",
                 "--dry-run",
@@ -129,7 +129,7 @@ def test_single_script_error_handling():
     """Test single script error handling."""
     result = subprocess.run(
         [
-            "./enr.sh",
+            "./enr.pyz",
             "test.com",
             "http://localhost:3000",
             "--config-dir",

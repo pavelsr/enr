@@ -1,11 +1,10 @@
 [build-system]
-requires = ["setuptools>=64.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["flit-core>=3.8.0"]
+build-backend = "flit_core.buildapi"
 
 [project]
 name = "enr"
-version = "0.1.0"
-description = "CLI utility for easy nginx reverse proxy configuration with automatic redirect handling"
+dynamic = ["version", "description"]
 authors = [{name = "Pavel Serikov", email = "devpasha@proton.me"}]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -16,7 +15,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -35,12 +33,15 @@ enr = "enr.cli:main"
 dev = [
     "pytest>=7.0.0",
     "black>=22.0.0",
-    "flake8>=5.0.0",
+    "ruff>=0.1.0",
+    "isort>=5.0.0",
+    "safety>=2.0.0",
+    "bandit>=1.7.0",
+    "flit>=3.9.0",
 ]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["enr*"]
+[tool.flit]
+module = "enr"
 
 [tool.black]
 line-length = 88
@@ -71,3 +72,4 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+

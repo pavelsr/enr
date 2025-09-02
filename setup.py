@@ -1,50 +1,19 @@
 #!/usr/bin/env python3
 """Setup script for ENR package."""
 
-from setuptools import find_packages, setup
+import sys
+from pathlib import Path
 
+# Add the project root to the path to import version
+sys.path.insert(0, str(Path(__file__).parent))
+
+try:
+    from enr import __version__
+except ImportError:
+    __version__ = "unknown"
+
+# This project uses flit for building
+# This file is kept for compatibility with tools that expect setup.py
 if __name__ == "__main__":
-    setup(
-        name="enr",
-        version="0.1.0",
-        description="CLI utility for easy nginx reverse proxy configuration with automatic redirect handling",
-        author="Pavel Serikov",
-        author_email="devpasha@proton.me",
-        packages=find_packages(),
-        install_requires=[],
-        entry_points={
-            "console_scripts": [
-                "enr=enr.cli:main",
-            ],
-        },
-        python_requires=">=3.10",
-        classifiers=[
-            "Development Status :: 4 - Beta",
-            "Intended Audience :: Developers",
-            "Intended Audience :: System Administrators",
-            "License :: OSI Approved :: MIT License",
-            "Operating System :: OS Independent",
-            "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.10",
-            "Programming Language :: Python :: 3.11",
-            "Programming Language :: Python :: 3.12",
-            "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
-            "Topic :: System :: Systems Administration",
-            "Topic :: Utilities",
-        ],
-        keywords=[
-            "nginx",
-            "reverse-proxy",
-            "docker",
-            "cli",
-            "devops",
-            "proxy",
-            "redirect",
-            "auto-redirect",
-        ],
-        url="https://github.com/pavelsr/enr",
-        project_urls={
-            "Homepage": "https://github.com/pavelsr/enr",
-            "Repository": "https://github.com/pavelsr/enr",
-        },
-    )
+    print("This project uses flit for building. Use 'flit build' or 'make build-dist'")
+    print(f"Current version: {__version__}")
