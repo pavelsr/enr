@@ -43,6 +43,18 @@ dev = [
 [tool.flit]
 module = "enr"
 
+[tool.flit.sdist]
+exclude = [
+    "enr.pyz",
+    "demo_*.py",
+    "README_ru.md",
+    "Makefile",
+    "setup.py",
+    ".github/",
+    ".pre-commit-config.yaml",
+    ".gitignore",
+]
+
 [tool.black]
 line-length = 88
 target-version = ['py311']

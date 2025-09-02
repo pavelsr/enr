@@ -1,4 +1,12 @@
-ENR - Easy Nginx Redirects
+ENR = Easy Nginx Redirects
+
+[![CLI Tool](https://img.shields.io/badge/CLI-Tool-green.svg)](https://github.com/pavelsr/enr)
+[![Made with Pure Python3](https://img.shields.io/badge/Made%20with-Pure%20Python3-FFCC33.svg?logo=python&logoColor=white)](https://docs.python.org/3/)
+[![Nginx as Proxy](https://img.shields.io/badge/Nginx-as%20Proxy-009639.svg?logo=nginx&logoColor=white)](https://nginx.org/)
+[![Docker as Deploy](https://img.shields.io/badge/Docker-as%20Deploy-blue.svg?logo=docker&logoColor=white)](https://www.docker.com/)
+[![MIT license](https://img.shields.io/badge/MIT-license-9933CC.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/badge/PyPI-version-FFCC33.svg)](https://pypi.org/project/enr/)
+[![Contact Developer](https://img.shields.io/badge/Contact-Developer-9933CC.svg?logo=telegram&logoColor=white)](https://t.me/serikoff)
 
 CLI utility for quick & easy generating nginx configuration and running Docker containers with nginx reverse proxy.
 
@@ -6,11 +14,12 @@ Uses only Python standard library without external dependencies. So the utility 
 
 This utility demonstrates the capabilities of nginx's [ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) using directives: `proxy_pass`, `proxy_pass_header`, `proxy_intercept_errors`, `proxy_ssl_verify`. These are the specific directives currently implemented, but `ngx_http_proxy_module` module offers many more options. The project serves as an example of a Python wrapper for automatic Docker container configuration and nginx-proxy integration, as well as building Python modules into a single executable script. You can fork this project and customize the nginx and Docker templates for your needs. Pull requests are welcome.
 
-<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+<!-- Created by https://github.com/ekalinin/github-markdown-toc (gh-md-toc README.md)-->
 
 Table of Contents
 =================
 
+* [Table of Contents](#table-of-contents)
 * [Use Cases](#use-cases)
 * [Installation](#installation)
    * [Quick Installation](#quick-installation)
@@ -27,11 +36,15 @@ Table of Contents
    * [Dependencies](#dependencies)
    * [Generated Nginx Configuration](#generated-nginx-configuration)
    * [Docker Container Running](#docker-container-running)
-* [Implemented Features &amp; Roadmap Lists](#implemented-features--roadmap-lists)
+* [Features &amp; Roadmap](#features--roadmap)
 * [Development &amp; Contributing](#development--contributing)
-      * [Pre-commit Hooks](#pre-commit-hooks)
+   * [Version Management](#version-management)
+      * [Versioning F.A.Q.](#versioning-faq)
+      * [Versioning scheme](#versioning-scheme)
+   * [Pre-commit Hooks](#pre-commit-hooks)
 
-<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc (gh-md-toc README.md) -->
 
 # Use Cases
 
@@ -80,8 +93,12 @@ cd enr
 pip install -e .
 # Install development dependencies
 pip install -e ".[dev]"
+# Install using flit in development mode
+flit install --symlink
 # Creates enr.pyz from modules:
 make build  # Creates enr.pyz from modules
+# Or use flit directly
+flit build
 ```
 
 ### Notes about pipx 
@@ -208,6 +225,7 @@ For full functionality, it is recommended to use:
 - `pathlib` - file system path operations
 - `subprocess` - running Docker commands
 - `str.format()` - nginx configuration formatting (instead of jinja2)
+- `zipapp` - building single script (instead of stickytape or PyInstaller)
 
 ## Generated Nginx Configuration
 
@@ -315,15 +333,30 @@ make clean
 </details>
 
 
+## Git Guidelines
+
+Before submitting a PR:
+
+1. **Squash your commits** into a single, meaningful commit. E.g.
+
+   ```bash
+   git reset --soft HEAD~42
+   git commit -m "feat: add new nginx configuration feature"
+   ```
+
+2. **Use descriptive commit messages** that explain what the change does
+
+   E.g.
+   ```bash
+   git commit -m "fix: resolve docker container startup issue (#456)"
+   ```
+
+   **Good practice**: Include issue number if one exists (as shown in the example above)
+
+FYI: I prefer [trunk-based development](https://trunkbaseddevelopment.com/) rather than [gitflow branching model](https://nvie.com/posts/a-successful-git-branching-model/)
+
+
 ## Version Management
-
-The project uses a centralized version management system with [flit](https://github.com/pypa/flit) for building. The version is stored in **ONE PLACE ONLY** and automatically propagated to all other files using flit's built-in dynamic version support:
-
-- **Single source of truth**: Version is stored **ONLY** in `version.py` in the project root
-- **Automatic propagation**: All other files automatically get the version from this file
-- **Flit dynamic versioning**: Uses flit's built-in `dynamic = ["version"]` feature
-- **No git dependency**: Version management works independently of git tags
-- **No manual sync needed**: Version is automatically read from module during build
 
 **To change version ONLY ONE STEP REQUIRED:** Update version in `__init__.py`: `__version__ = "x.y.z"`
 
@@ -331,12 +364,46 @@ The project uses a centralized version management system with [flit](https://git
 - `make build` - builds single script with current version
 - `make build-dist` - builds distribution packages with current version
 
-**Files that automatically get the version:**
-- `pyproject.toml` - gets version automatically via flit dynamic versioning
-- Distribution packages (wheel, tar.gz) - get the correct version in their names
-- Single script (`enr.pyz`) - gets version from `__init__.py`
+<details>
+<summary>Benefits of this approach</summary>
 
-For detailed information, see [VERSIONING.md](VERSIONING.md).
+- **Single source of truth**: Version managed in ONE file only (`__init__.py`)
+- **Automatic propagation**: All other files automatically get the version from this file
+- **Flit dynamic versioning**: Uses flit's built-in `dynamic = ["version"]` feature
+- **No git dependency**: Version management works independently of git tags
+- **No manual sync needed**: Version is automatically read from module during build
+</details>
+
+
+<details>
+<summary>Files that automatically get the version</summary>
+
+```
+pyenr/
+├── enr/
+│ └── init.py # ← MAIN VERSION FILE (change here ONLY)
+├── pyproject.toml # ← gets version automatically via flit dynamic
+├── setup.py # ← imports version from enr.init (legacy compatibility)
+├── enr.pyz # ← single executable script (built via make build)
+└── dist/ # ← packages get version automatically
+```
+
+</details>
+
+### Versioning F.A.Q.
+
+**Q: How to check current version?**
+A: Run `python -c "import enr; print(enr.__version__)"`
+
+**Q: Version didn't update after changing version.py?**
+A: Make sure to run `make build` or `make build-dist` after changing the version. Flit will automatically read the new version.
+
+**Q: Flit build failed?**
+A: Make sure all files are committed to git, as flit requires a clean git state.
+
+### Versioning scheme
+
+This project follows [Semantic Versioning](https://semver.org/)
 
 ## Pre-commit Hooks
 
@@ -346,7 +413,5 @@ The project uses pre-commit hooks for automatic code quality checking before eac
 - ✅ Single script build (`make build`)
 - ✅ Code formatting (Black)
 - ✅ Style checking (ruff)
-- ✅ Test running
+- ✅ Test running (pytest)
 - ✅ Automatic addition of changed `enr.pyz` to commit
-
-
