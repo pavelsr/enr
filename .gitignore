@@ -50,6 +50,7 @@ default.conf
 Thumbs.db
 
 # Other
-docs/
+docs/*.md
 docs-build/
 README_ru.md
+*.deb

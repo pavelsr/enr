@@ -1,5 +1,9 @@
 ENR = Easy Nginx Redirects
 
+<div align="center">
+  <img src="docs/logo.png" alt="ENR Logo" width="300">
+</div>
+
 [![CLI Tool](https://img.shields.io/badge/CLI-Tool-green.svg)](https://github.com/pavelsr/enr)
 [![Made with Pure Python3](https://img.shields.io/badge/Made%20with-Pure%20Python3-FFCC33.svg?logo=python&logoColor=white)](https://docs.python.org/3/)
 [![Nginx as Proxy](https://img.shields.io/badge/Nginx-as%20Proxy-009639.svg?logo=nginx&logoColor=white)](https://nginx.org/)
