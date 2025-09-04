@@ -1,7 +1,7 @@
 ENR = Easy Nginx Redirects
 
 <div align="center">
-  <img src="docs/logo.png" alt="ENR Logo" width="300">
+  <img src="https://raw.githubusercontent.com/pavelsr/enr/refs/heads/main/docs/logo.png" alt="ENR Logo" width="300">
 </div>
 
 [![CLI Tool](https://img.shields.io/badge/CLI-Tool-green.svg)](https://github.com/pavelsr/enr)
