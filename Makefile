@@ -1,4 +1,4 @@
-.PHONY: help install test clean format lint run-example build build-dist upload-testpypi upload-pypi clean-dist
+.PHONY: help install test clean format lint run-example build build-dist build-deb upload-testpypi upload-pypi clean-dist
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -78,6 +78,44 @@ build-dist: ## Build distribution packages
 	@echo "✅ Distribution packages built successfully"
 	@echo "📦 Files created:"
 	@ls -la dist/
+
+build-deb: build ## Build DEB package using fpm
+	@echo "🔍 Checking if fpm is installed..."
+	@if ! command -v fpm >/dev/null 2>&1; then \
+		echo "⚠️  fpm not found."; \
+		if command -v apt-get >/dev/null 2>&1; then \
+			echo "🔍 Detected debian-based distribution."; \
+			echo "❓ Do you want to automatically install fpm? (y/N): "; \
+			read -r response; \
+			if [ "$$response" = "y" ] || [ "$$response" = "Y" ]; then \
+				echo "📦 Installing dependencies for fpm..."; \
+				sudo apt-get update && sudo apt-get install -y ruby ruby-dev rubygems build-essential; \
+				echo "💎 Installing fpm gem..."; \
+				sudo gem install --no-document fpm; \
+				echo "✅ fpm installed successfully"; \
+			else \
+				echo "❌ Please install fpm manually: sudo apt install ruby ruby-dev rubygems build-essential && sudo gem install --no-document fpm"; \
+				exit 1; \
+			fi; \
+		else \
+			echo "❌ Please install fpm manually for your distribution"; \
+			exit 1; \
+		fi; \
+	else \
+		echo "✅ fpm is already installed"; \
+	fi
+	@echo "🔨 Building DEB package..."
+	@VERSION=$$(python -c 'from enr import __version__; print(__version__)' 2>/dev/null || echo '0.1.1'); \
+	fpm -s dir -t deb \
+		--name enr \
+		--version $$VERSION \
+		--description "ENR CLI utility for nginx config and Docker container management" \
+		--maintainer "Pavel Serikov <devpasha@proton.me>" \
+		--depends python3 \
+		enr.pyz=/usr/bin/enr
+	@echo "✅ DEB package built successfully"
+	@echo "📦 Files created:"
+	@ls -la *.deb
 
 check: format lint test ## Run all checks (format, lint, test)
 
